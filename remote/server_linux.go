@@ -21,7 +21,7 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/coreos/flannel/Godeps/_workspace/src/github.com/coreos/go-systemd/activation"
+	"github.com/coreos/go-systemd/activation"
 )
 
 func fdListener(addr string) (net.Listener, error) {
