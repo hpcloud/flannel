@@ -21,8 +21,8 @@ import (
 	"syscall"
 	"time"
 
-	log "github.com/coreos/flannel/Godeps/_workspace/src/github.com/golang/glog"
-	"github.com/coreos/flannel/Godeps/_workspace/src/golang.org/x/net/context"
+	log "github.com/golang/glog"
+	"golang.org/x/net/context"
 	"github.com/coreos/flannel/pkg/routes"
 
 	"github.com/coreos/flannel/backend"

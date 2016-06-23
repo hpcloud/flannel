@@ -23,10 +23,10 @@ import (
 	"sync"
 	"time"
 
-	etcd "github.com/coreos/flannel/Godeps/_workspace/src/github.com/coreos/etcd/client"
-	"github.com/coreos/flannel/Godeps/_workspace/src/github.com/coreos/etcd/pkg/transport"
-	log "github.com/coreos/flannel/Godeps/_workspace/src/github.com/golang/glog"
-	"github.com/coreos/flannel/Godeps/_workspace/src/golang.org/x/net/context"
+	etcd "github.com/coreos/etcd/client"
+	"github.com/coreos/etcd/pkg/transport"
+	log "github.com/golang/glog"
+	"golang.org/x/net/context"
 
 	"github.com/coreos/flannel/pkg/ip"
 )
@@ -55,6 +55,8 @@ type EtcdConfig struct {
 	Certfile  string
 	CAFile    string
 	Prefix    string
+	Username  string
+	Password  string
 }
 
 type etcdNewFunc func(c *EtcdConfig) (etcd.KeysAPI, error)
@@ -82,6 +84,8 @@ func newEtcdClient(c *EtcdConfig) (etcd.KeysAPI, error) {
 	cli, err := etcd.New(etcd.Config{
 		Endpoints: c.Endpoints,
 		Transport: t,
+		Username:  c.Username,
+		Password:  c.Password,
 	})
 	if err != nil {
 		return nil, err

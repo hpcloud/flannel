@@ -25,7 +25,7 @@ import (
 	"reflect"
 	"unsafe"
 
-	log "github.com/coreos/flannel/Godeps/_workspace/src/github.com/golang/glog"
+	log "github.com/golang/glog"
 
 	"github.com/coreos/flannel/pkg/ip"
 )

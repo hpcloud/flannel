@@ -23,9 +23,9 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/coreos/flannel/Godeps/_workspace/src/github.com/coreos/pkg/flagutil"
-	log "github.com/coreos/flannel/Godeps/_workspace/src/github.com/golang/glog"
-	"github.com/coreos/flannel/Godeps/_workspace/src/golang.org/x/net/context"
+	"github.com/coreos/pkg/flagutil"
+	log "github.com/golang/glog"
+	"golang.org/x/net/context"
 
 	"github.com/coreos/flannel/network"
 	"github.com/coreos/flannel/remote"
@@ -47,6 +47,8 @@ type CmdLineOpts struct {
 	etcdKeyfile    string
 	etcdCertfile   string
 	etcdCAFile     string
+	etcdUsername   string
+	etcdPassword   string
 	help           bool
 	version        bool
 	listen         string
@@ -64,6 +66,8 @@ func init() {
 	flag.StringVar(&opts.etcdKeyfile, "etcd-keyfile", "", "SSL key file used to secure etcd communication")
 	flag.StringVar(&opts.etcdCertfile, "etcd-certfile", "", "SSL certification file used to secure etcd communication")
 	flag.StringVar(&opts.etcdCAFile, "etcd-cafile", "", "SSL Certificate Authority file used to secure etcd communication")
+	flag.StringVar(&opts.etcdUsername, "etcd-username", "", "Username for BasicAuth to etcd")
+	flag.StringVar(&opts.etcdPassword, "etcd-password", "", "Password for BasicAuth to etcd")
 	flag.StringVar(&opts.listen, "listen", "", "run as server and listen on specified address (e.g. ':8080')")
 	flag.StringVar(&opts.remote, "remote", "", "run as client and connect to server on specified address (e.g. '10.1.2.3:8080')")
 	flag.StringVar(&opts.remoteKeyfile, "remote-keyfile", "", "SSL key file used to secure client/server communication")
@@ -84,6 +88,8 @@ func newSubnetManager() (subnet.Manager, error) {
 		Certfile:  opts.etcdCertfile,
 		CAFile:    opts.etcdCAFile,
 		Prefix:    opts.etcdPrefix,
+		Username:  opts.etcdUsername,
+		Password:  opts.etcdPassword,
 	}
 
 	return subnet.NewLocalManager(cfg)

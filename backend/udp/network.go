@@ -23,9 +23,9 @@ import (
 	"sync"
 	"syscall"
 
-	log "github.com/coreos/flannel/Godeps/_workspace/src/github.com/golang/glog"
-	"github.com/coreos/flannel/Godeps/_workspace/src/github.com/vishvananda/netlink"
-	"github.com/coreos/flannel/Godeps/_workspace/src/golang.org/x/net/context"
+	log "github.com/golang/glog"
+	"github.com/vishvananda/netlink"
+	"golang.org/x/net/context"
 
 	"github.com/coreos/flannel/backend"
 	"github.com/coreos/flannel/pkg/ip"
@@ -157,7 +157,7 @@ func configureIface(ifname string, ipn ip.IP4Net, mtu int) error {
 		return fmt.Errorf("failed to lookup interface %v", ifname)
 	}
 
-	err = netlink.AddrAdd(iface, &netlink.Addr{ipn.ToIPNet(), ""})
+	err = netlink.AddrAdd(iface, &netlink.Addr{IPNet: ipn.ToIPNet(), Label: ""})
 	if err != nil {
 		return fmt.Errorf("failed to add IP address %v to %v: %v", ipn.String(), ifname, err)
 	}

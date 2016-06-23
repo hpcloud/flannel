@@ -23,9 +23,9 @@ import (
 	"syscall"
 	"time"
 
-	log "github.com/coreos/flannel/Godeps/_workspace/src/github.com/golang/glog"
-	"github.com/coreos/flannel/Godeps/_workspace/src/github.com/vishvananda/netlink"
-	"github.com/coreos/flannel/Godeps/_workspace/src/github.com/vishvananda/netlink/nl"
+	log "github.com/golang/glog"
+	"github.com/vishvananda/netlink"
+	"github.com/vishvananda/netlink/nl"
 
 	"github.com/coreos/flannel/pkg/ip"
 )
@@ -304,7 +304,7 @@ func setAddr4(link *netlink.Vxlan, ipn *net.IPNet) error {
 		}
 	}
 
-	addr := netlink.Addr{ipn, ""}
+	addr := netlink.Addr{IPNet: ipn, Label: ""}
 	if err = netlink.AddrAdd(link, &addr); err != nil {
 		return fmt.Errorf("failed to add IP address %s to %s: %s", ipn.String(), link.Attrs().Name, err)
 	}
