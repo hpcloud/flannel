@@ -1,4 +1,5 @@
 package: github.com/coreos/flannel
+version: ""
 import:
 - package: github.com/aws/aws-sdk-go
   version: v0.9.4rc5
@@ -29,10 +30,6 @@ import:
   subpackages:
   - activation
   - daemon
-- package: github.com/coreos/pkg
-  version: b0d3d81732aea341039d191d8618a3466fe54395
-  subpackages:
-  - flagutil
 - package: github.com/golang/glog
   version: d1c4472bf2efd3826f2b5bdcc02d8416798d678c
 - package: github.com/golang/protobuf
@@ -72,3 +69,7 @@ import:
   subpackages:
   - compute/metadata
   - internal
+- package: github.com/coreos/pkg
+  version: v2
+  subpackages:
+  - flagutil
