@@ -1,5 +1,5 @@
-hash: 17c68b031c830c07db965733785b9c1575b542503c07ad742a00972e59310ffc
-updated: 2016-07-12T01:03:53.553504535-04:00
+hash: 385c05d4b7d1d0583892d27bebe87d975faf93480bd3b494c8f76e9575bc9d98
+updated: 2016-06-28T14:32:45.86741967Z
 imports:
 - name: github.com/aws/aws-sdk-go
   version: 5c0313fff8cd85670ae4fc996254dd7d66cb4cf7
@@ -75,6 +75,10 @@ imports:
   - internal
   - jws
   - jwt
+- name: golang.org/x/sys
+  version: 62bee037599929a6e9146f29d10dd5208c43507d
+  subpackages:
+  - windows
 - name: google.golang.org/api
   version: e6294e63a06b2be522ff3d328d8cacded0b1bd31
   subpackages:
