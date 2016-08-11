@@ -111,6 +111,12 @@ function DoAction-Install()
     Write-Output "Using FLANNEL_USER_PASSWORD $($env:FLANNEL_USER_PASSWORD)"
     Write-Output "Using FLANNEL_INSTALL_DIR $($env:FLANNEL_INSTALL_DIR)"
     Write-Output "Using FLANNEL_EXT_INTERFACE $($env:FLANNEL_EXT_INTERFACE)"
+    if ((![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_KEYFILE)) -And (![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_CERTFILE) -And (![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_CAFILE)))
+    {
+        Write-Output "Using FLANNEL_ETCD_KEYFILE $($env:FLANNEL_ETCD_KEYFILE)"
+        Write-Output "Using FLANNEL_ETCD_CERTFILE $($env:FLANNEL_ETCD_CERTFILE)"
+        Write-Output "Using FLANNEL_ETCD_CAFILE $($env:FLANNEL_ETCD_CAFILE)"
+    }
 
     $destFolder = $env:FLANNEL_INSTALL_DIR
 
@@ -243,13 +249,20 @@ function InstallFlannelConn($destfolder)
     $logsFolder = Join-Path $destFolder 'logs'
     $nssmExe = Join-Path $destFolder 'nssm.exe'
 
+    $etcdCertArgs = ""
+
+    if ((![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_KEYFILE)) -And (![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_CERTFILE) -And (![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_CAFILE)))
+    {
+        $etcdCertArgs = "--etcd-keyfile=$($env:FLANNEL_ETCD_KEYFILE) --etcd-certfile=$($env:FLANNEL_ETCD_CERTFILE) --etcd-cafile=$($env:FLANNEL_ETCD_CAFILE)"
+    }
+
     $serviceConfigs = @{
         "flannel" = @{
             "serviceDisplayName" = " Flannel";
             "serviceDescription" = "Flannel service";
             "startupDirectory" = $destFolder;
             "executable" = Join-Path $destFolder "flanneld.exe";
-            "arguments" = "--etcd-endpoints=$($env:FLANNEL_ETCD_ENDPOINTS) --iface=$($env:FLANNEL_EXT_INTERFACE)";
+            "arguments" = "--etcd-endpoints=$($env:FLANNEL_ETCD_ENDPOINTS) --iface=$($env:FLANNEL_EXT_INTERFACE) $($etcdCertArgs)";
             "stdoutLog" = Join-Path $logsFolder "flannel.stdout.log";
             "stderrLog" = Join-Path $logsFolder "flannel.stderr.log";
         };
