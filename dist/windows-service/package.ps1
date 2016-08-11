@@ -111,7 +111,7 @@ function DoAction-Install()
     Write-Output "Using FLANNEL_USER_PASSWORD $($env:FLANNEL_USER_PASSWORD)"
     Write-Output "Using FLANNEL_INSTALL_DIR $($env:FLANNEL_INSTALL_DIR)"
     Write-Output "Using FLANNEL_EXT_INTERFACE $($env:FLANNEL_EXT_INTERFACE)"
-    if ((![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_KEYFILE)) -And (![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_CERTFILE) -And (![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_CAFILE)))
+    if ((![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_KEYFILE)) -And (![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_CERTFILE)) -And (![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_CAFILE)))
     {
         Write-Output "Using FLANNEL_ETCD_KEYFILE $($env:FLANNEL_ETCD_KEYFILE)"
         Write-Output "Using FLANNEL_ETCD_CERTFILE $($env:FLANNEL_ETCD_CERTFILE)"
@@ -251,7 +251,7 @@ function InstallFlannelConn($destfolder)
 
     $etcdCertArgs = ""
 
-    if ((![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_KEYFILE)) -And (![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_CERTFILE) -And (![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_CAFILE)))
+    if ((![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_KEYFILE)) -And (![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_CERTFILE)) -And (![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_CAFILE)))
     {
         $etcdCertArgs = "--etcd-keyfile=$($env:FLANNEL_ETCD_KEYFILE) --etcd-certfile=$($env:FLANNEL_ETCD_CERTFILE) --etcd-cafile=$($env:FLANNEL_ETCD_CAFILE)"
     }
