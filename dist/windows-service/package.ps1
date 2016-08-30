@@ -66,12 +66,12 @@ function Get-MyExternalIP{
     $rez = Get-NetIPAddress -AddressFamily IPv4 -AddressState Preferred -InterfaceAlias Ethernet* | Select-Object -First 1 | Format-Wide -Property IPAddress
 
     if (!$rez){
-      Write-Host "Could not get IP Address"
+      Write-Host "[flannel] Could not get IP Address"
       exit 255
     }
 
     if($rez.Length -ne 5){
-     Write-Host "Could not get the correct response while trying to get the IP Address"
+     Write-Host "[flannel] Could not get the correct response while trying to get the IP Address"
       exit 255
     }
 
@@ -82,14 +82,14 @@ function Get-MyExternalIP{
 # Entry point of the script when the action is "install"
 function DoAction-Install()
 {
-    Write-Output 'Stopping any existing Flannel service'
+    Write-Output '[flannel] Stopping any existing Flannel service'
     Stop-Service -Name "flannel" -ErrorAction SilentlyContinue | Out-Null
 
-    Write-Output 'Installing Flannel services ...'
+    Write-Output '[flannel] Installing Flannel services ...'
 
     if ([string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_ENDPOINTS))
     {
-        Write-Error 'Could not find environment variable FLANNEL_ETCD_ENDPOINTS. Please set it to the etcd service that flannel should connect to (e.g. http://10.11.0.43:2379) to and try again.'
+        Write-Error '[flannel] Could not find environment variable FLANNEL_ETCD_ENDPOINTS. Please set it to the etcd service that flannel should connect to (e.g. http://10.11.0.43:2379) to and try again.'
         exit 1
     }
 
@@ -107,49 +107,50 @@ function DoAction-Install()
         $env:FLANNEL_EXT_INTERFACE = Get-MyExternalIP
     }
 
-    Write-Output "Using FLANNEL_ETCD_ENDPOINTS $($env:FLANNEL_ETCD_ENDPOINTS)"
-    Write-Output "Using FLANNEL_USER_PASSWORD $($env:FLANNEL_USER_PASSWORD)"
-    Write-Output "Using FLANNEL_INSTALL_DIR $($env:FLANNEL_INSTALL_DIR)"
-    Write-Output "Using FLANNEL_EXT_INTERFACE $($env:FLANNEL_EXT_INTERFACE)"
+    Write-Output "[flannel] Using FLANNEL_ETCD_ENDPOINTS $($env:FLANNEL_ETCD_ENDPOINTS)"
+    Write-Output "[flannel] Using FLANNEL_USER_PASSWORD $($env:FLANNEL_USER_PASSWORD)"
+    Write-Output "[flannel] Using FLANNEL_INSTALL_DIR $($env:FLANNEL_INSTALL_DIR)"
+    Write-Output "[flannel] Using FLANNEL_EXT_INTERFACE $($env:FLANNEL_EXT_INTERFACE)"
+
     if ((![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_KEYFILE)) -And (![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_CERTFILE)) -And (![string]::IsNullOrWhiteSpace($env:FLANNEL_ETCD_CAFILE)))
     {
-        Write-Output "Using FLANNEL_ETCD_KEYFILE $($env:FLANNEL_ETCD_KEYFILE)"
-        Write-Output "Using FLANNEL_ETCD_CERTFILE $($env:FLANNEL_ETCD_CERTFILE)"
-        Write-Output "Using FLANNEL_ETCD_CAFILE $($env:FLANNEL_ETCD_CAFILE)"
+        Write-Output "[flannel] Using FLANNEL_ETCD_KEYFILE $($env:FLANNEL_ETCD_KEYFILE)"
+        Write-Output "[flannel] Using FLANNEL_ETCD_CERTFILE $($env:FLANNEL_ETCD_CERTFILE)"
+        Write-Output "[flannel] Using FLANNEL_ETCD_CAFILE $($env:FLANNEL_ETCD_CAFILE)"
     }
 
     $destFolder = $env:FLANNEL_INSTALL_DIR
 
     foreach ($dir in @($destFolder))
     {
-        Write-Output "Cleaning up directory ${dir}"
+        Write-Output "[flannel] Cleaning up directory ${dir}"
         Remove-Item -Force -Recurse -Path $dir -ErrorVariable errors -ErrorAction SilentlyContinue
 
         if ($errs.Count -eq 0)
         {
-            Write-Output "Successfully cleaned the directory ${dir}"
+            Write-Output "[flannel] Successfully cleaned the directory ${dir}"
         }
         else
         {
-            Write-Error "There was an error cleaning up the directory '${dir}'.`r`nPlease make sure the folder and any of its child items are not in use, then run the installer again."
+            Write-Error "[flannel] There was an error cleaning up the directory '${dir}'.`r`nPlease make sure the folder and any of its child items are not in use, then run the installer again."
             exit 1;
         }
 
-        Write-Output "Setting up directory ${dir}"
+        Write-Output "[flannel] Setting up directory ${dir}"
         New-Item -path $dir -type directory -Force -ErrorAction SilentlyContinue | out-null
     }
 
     [Reflection.Assembly]::LoadWithPartialName( "System.IO.Compression.FileSystem" ) | out-null
     $srcFile = ".\binaries.zip"
 
-    Write-Output 'Unpacking files ...'
+    Write-Output '[flannel] Unpacking files ...'
     try
     {
         [System.IO.Compression.ZipFile]::ExtractToDirectory($srcFile, $destFolder)
     }
     catch
     {
-        Write-Error "There was an error writing to the installation directory '${destFolder}'.`r`nPlease make sure the folder and any of its child items are not in use, then run the installer again."
+        Write-Error "[flannel] There was an error writing to the installation directory '${destFolder}'.`r`nPlease make sure the folder and any of its child items are not in use, then run the installer again."
         exit 1;
     }
 
@@ -164,12 +165,12 @@ function Create-FlannelUser()
 
     if ($colUsers -contains 'flannel')
     {
-        Write-Output "User 'flannel' exists"
+        Write-Output "[flannel] User 'flannel' exists"
 
     }
     else
     {
-        Write-Output "Creating user 'flannel"
+        Write-Output "[flannel] Creating user 'flannel"
         $computername = $env:computername   # place computername here for remote access
         $username = 'flannel'
         $password = $env:FLANNEL_USER_PASSWORD
@@ -192,12 +193,12 @@ function Create-FlannelUser()
 # This function calls the nssm.exe binary to set a property
 function SetNSSMParameter($nssmExe, $serviceName, $parameterName, $parameterValue)
 {
-    Write-Output "Setting parameter '${parameterName}' for service '${serviceName}'"
+    Write-Output "[flannel] Setting parameter '${parameterName}' for service '${serviceName}'"
     $nssmProcess = Start-Process -Wait -PassThru -NoNewWindow $nssmExe "set ${serviceName} ${parameterName} ${parameterValue}"
 
     if ($nssmProcess.ExitCode -ne 0)
     {
-        Write-Error "There was an error setting the ${parameterName} NSSM parameter."
+        Write-Error "[flannel] There was an error setting the ${parameterName} NSSM parameter."
         exit 1
     }
 }
@@ -205,13 +206,13 @@ function SetNSSMParameter($nssmExe, $serviceName, $parameterName, $parameterValu
 # This function calls the nssm.exe binary to install a new  Windows Service
 function InstallNSSMService($nssmExe, $serviceName, $executable)
 {
-    Write-Output "Installing service '${serviceName}'"
+    Write-Output "[flannel] Installing service '${serviceName}'"
 
     $nssmProcess = Start-Process -Wait -PassThru -NoNewWindow $nssmExe "remove ${serviceName} confirm"
 
     if (($nssmProcess.ExitCode -ne 0) -and ($nssmProcess.ExitCode -ne 3))
     {
-        Write-Error "There was an error removing the '${serviceName}' service."
+        Write-Error "[flannel] There was an error removing the '${serviceName}' service."
         exit 1
     }
 
@@ -219,7 +220,7 @@ function InstallNSSMService($nssmExe, $serviceName, $executable)
 
     if (($nssmProcess.ExitCode -ne 0) -and ($nssmProcess.ExitCode -ne 5))
     {
-        Write-Error "There was an error installing the '${serviceName}' service."
+        Write-Error "[flannel] There was an error installing the '${serviceName}' service."
         exit 1
     }
 }
@@ -286,7 +287,7 @@ function InstallFlannelConn($destfolder)
     New-Item -ItemType Directory -Path $logsFolder | out-null
 
     # Start services
-    Write-Output "Starting services ..."
+    Write-Output "[flannel] Starting services ..."
     Start-Service -Name "flannel"
 
 }
