@@ -28,8 +28,8 @@ TargetName=.\flannel-installer.EXE
 FriendlyName=Flannel installer
 AppLaunched=powershell.exe -ExecutionPolicy Bypass -noexit -nologo -File .\package.ps1 -Action install
 PostInstallCmd=<None>
-AdminQuietInstCmd=powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -nologo -Command "& { .\package.ps1 -Action install 2>&1 1> c:\flannel.log }"
-UserQuietInstCmd=powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -nologo -Command "& { .\package.ps1 -Action install 2>&1 1> c:\flannel.log }"
+AdminQuietInstCmd=powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -nologo -Command "& { .\package.ps1 -Action install 2>&1 1> c:\network-setup.log }"
+UserQuietInstCmd=powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -nologo -Command "& { .\package.ps1 -Action install 2>&1 1> c:\network-setup.log }"
 FILE0="binaries.zip"
 FILE1="package.ps1"
 [SourceFiles]
